@@ -1,0 +1,10 @@
+Just for 4 Joints without velocity
+$ rostopic pub -1 /joint_states sensor_msgs/JointState '{header: auto, name: ['joint0', 'joint1', 'joint2', 'joint3'], position: [1, 0.5418, -1.7297, -3.1017], velocity: [], effort: []}'
+
+
+ur5 like
+$ rostopic pub -1 /joint_states sensor_msgs/JointState '{header: auto, name: ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint','wrist_2_joint' ,'wrist_3_joint'], position: [0.0, -0.1, 0.1, -1.57, -0.785, 0.0], velocity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], effort: [0.100, -4.871, -1.244, -0.280, -0.0106, 0.0579]}'
+
+to publish with 10 hertz (change accordingly)
+$ rostopic pub -r 10 /joint_states sensor_msgs/JointState{header: auto, name: ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint','wrist_2_joint' ,'wrist_3_joint'], position: [0.0, -0.1, 0.1, -1.57, -0.785, 0.0], velocity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], effort: [0.100, -4.871, -1.244, -0.280, -0.0106, 0.0579]}'
+

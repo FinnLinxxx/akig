@@ -1,0 +1,6 @@
+Die aufgenommenen Bagfiles mit Lasertracker und Robotearm liegen im Hauptverzeichnis unter
+/Data/rosbags
+Von hier aus kann dort mit 
+$ cd ../Data/rosbags
+in der Kommandozeile hin navigiert werden.
+Die Namen beziehen sich einmal auf den Geschwindigkeitsfaktor (0,5 oder 1,0) des Roboterarms, der gemessenen Hertzzahl des Lasertrackers (10hz oder 125hz) und ob die Ansteuerung über LAN oder WLAN erfolgte.
