@@ -42,3 +42,5 @@ $ akig/ROS_Tutorial/listenerProgram
 
 Unbedingt daran denken, falls der roscore geschlossen worden sein sollte (strg+C), dass dieser wieder mit dem gewählten Port gestartet wird.
 $ roscore -p xxxxx
+
+Hallo hier ist Markus
