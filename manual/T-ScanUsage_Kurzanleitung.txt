@@ -1,0 +1,80 @@
+Nachdem die Trafo gerechnet ist. Wir können nun Punktwolken acquirieren, die sich sowohl auf das Lokale System beziehen (Zentrum-Scanner),
+als auch solche, die sich im Lasertrackersystem befinden.
+
+Kurzanleitung
+ScannerController PC-Programm an machen (bei Fehlermeldung neustart PC)
+SCANNERCONTROLLER auf ON, Text rattert beim Terminalprogramm bis grüne Oberfläche warten
+T-Scan Collect 9.02 starten, Messwerte Environmental Parameters bestätigen. Bei Fehler nur dieses Programm schließen und wieder starten (bei Punkte unten in der Leiste rechts auf grün)
+
+SA starten
+SA muss auf Millimeter eingestellt sein. Das Gerät muss hinzugefügt sein, etc. (siehe Anleitung Gruppe)
+Instrument >> Run Interface Module >>Leica T-Scan >> OK ... Warten, Beam muss auf ein Prisma der T-Scan eingelockt sein: 6D Status OK!
+Start Scan >> Am Instrument leicht wackeln >> Stop Scan (Nur wenn man am Instrument wackelt nimmt er auf, wie fatal...)
+Gute Namen vergeben, SA speichern und schließen.
+SA schließen
+T-Scan Collect 9.02 schließen
+Das Terminalprogramm (Scanner Controller) schließen
+SCANNERCONTROLLER auf off
+
+Das Terminalprogramm (Scanner Controller) öffnen
+SCANNERCONTROLLER auf on (bis grün)
+T-Scan Collect 9.02 starten, Messwerte Environmental Parameters bestätigen. Bei Fehler nur dieses Programm schließen und wieder starten (bei Punkte unten in der Leiste rechts auf grün)
+DEBUG Client starten (Finn fragen was das ist)
+Alle Scanlines.txts löschen! (Vielleicht sind keine drin)
+Die TScanClient.EXE starten
+>> ConnectScanner
+Alle Updatehandeler Köpfe drücken (insgesamt die 5 dort oben,...set successfully)
+ConnectScanner
+StartScannerMeasuremnt (entspricht dem gleichen Knopf wie bei SA)
+wieder leicht am Instrument wackeln...
+Die Scanlines werden in genau das Verzeichnis geschrieben, in dem TScanClient.exe gestartet wurde (Name: Scanline_Id_1.txt). Dort kann man also auch direkt verfolgen, ob das Wackeln erfolgreich war...
+StopScannerMeasurement
+StopAcquisitionMode
+Close
+Auch T-Scan Collect schließen
+Die Scanline_Id_1.txt (oder andere) nun in ein Verzeichnis speichern. Anschließend alle weiteren Scanline_Id_x.txts löschen
+
+Mit Python den MP_Server.py ausführen
+Auf dem Roboterarm Tablet File>>load program>>MP_Client...>>OK >> Warten(1 Sekunde oder so>> Continue >> Warten(5 Sekunden oder so) >> Stop Program. 
+Auf dem PC sollte nun dort wo die MP_Server.py liegt ein Textfile namens test_pose.txt liegen und genau 2 Zeilen lang sein. 
+Umbenennen und gezielt abspeichern.
+
+Das Terminalprogramm Scanner Controller (grüne Oberfläche) in den Vordergrund holen
+reinklicken
+asc (enter) (eingeben)
+smo (enter)
+2 Sekunden warten
+smf (enter)
+Die Scannerzentrische Punktwolke liegt nun dort wo die ScannerController Systemdateien liegen (C:\ScannerController) und heißt so SCAN000x.asc, mit Zeitabgleich kann die eigene gefunden werden.
+gezielt abspeichern (und dort wo sie her ist löschen)
+Das Terminalprogramm ScannerController kann geschlossen werden.
+
+Als Daten liegen nun vor:
+Scanline_Id_1.txt (und evtl wieter durchnummeriert, Beinhaltet Trackerzentrische Daten, aus TScanClient.exe (eigenes C++ Programm))
+test_pose2_SMO.txt (beispielname, Beinhaltet 2 Zeilen, die den Winkelpositionen des UR beschreiben (vom MP_Server.py Programm))
+SCAN0001.asc (oder ähnlicher Name, Beinhaltet Scannerzentrische Koordinaten)
+
+Scanline_Id_1.txt (oder ähnlich) öffnen und dort eine einzelne Scanline rauskopieren (Rund 178 Einzelpunkte pro Scanline)
+Mit eigenem Namen Abspeichern.
+Diese Datei nun in Excel öffnen
+Die A und B Zeile vertauschen (X und Y tauschen)
+Mit Strg+H aus allen . ein , machen (Replace all, close)
+Die B Zeile nun in einer abgelegenen Zeile reinkopieren, aber mal -1 nehmen (=B1*-1, alle Zeilen)
+Die B Zeile durch die B*-1 Zeile ersetzten (Am Ende bleibt wieder nur A,B,C, aber eben ist B nun B*-1 überall)
+Mit Strg+H aus allen , nun wieder ein . machen (Replace all, close).
+Speichern und schließen
+SA öffnen
+SA muss auf mm eingestellt sein
+Nun fügen wir die eine Scanline in SA ein... File >> Import >> ASCII predifined Format >> "unsere eine Scanline aus excel" >> Open >> X Y Z in der Liste wählen und Group Name vergeben.
+Falls das nicht Plausibel aussehen sollte sind vielleicht noch die Floating Werte , getrennt statt . getrennt (beheben mit Strg+H in einem Textprogramm)
+
+Jetzt messen wir noch das Prisma von der T-Scan als wär es ein ganz normales Prisma. Dafür ab hier die ganze Zeit die T-Cam über dem laseraustritt beim Tracker "zuhalten", sie darf nicht sehen/verstehen worauf sie misst.
+SCANNERCONTROLLER muss off sein (jetzt ausschalten, wenn noch nicht geschehen)
+Sichtverbindung T-Scan und Tracker unterbrechen (hand durchwischen)
+Bei SA >> Instrument >> Run Interface Module >> Laser Trackers (ganz oben) >> A0 - Leica emScon... anklicken >> Ok >> Ok (bis interface erscheint)
+Bei SA den Punkt messen (gute Namen vergeben)
+SA speichern.
+
+Fertig, alle Daten wurden für 1 Pose erhoben.
+Für weitere Posen wiederholen (eventuell können abkürzungen gefunden werden)
+

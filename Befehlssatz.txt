@@ -1,7 +1,0 @@
-Um den Roboter nach einer bestimmten Posenreihenfolge fahren zu lassen
-Die angegebene Datei joints_file:= kann zum Beispiel aus RoboDK herauskopiert werden.
-$ roslaunch igros_ur move_juri.launch joints_file:=/home/finn/workspace_ur/src/igros_ur/trajectories/stupidplane.txt speed_factor:=0.5
-
-Wird der Uri durch Tomass Script einfach angesprochen und dann eventuell auch im Freedrive bewegt
-oder liegen rosbag daten des UR5 vor, so ist es nötig den base_link Frame mit der Map zu verknüpfen
-$ rosrun tf static_transform_publisher 0 0 0 0 0 0 map base_link 300
