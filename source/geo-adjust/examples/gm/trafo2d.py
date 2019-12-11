@@ -1,0 +1,237 @@
+from numpy import array, pi, mean, hstack, zeros, float64, nonzero, zeros_like, ones
+import sympy as sp
+import dill
+from scipy.linalg import block_diag
+
+from geo_adjust.config import GMModelConfig
+from geo_adjust.gh import GHAdjust
+from geo_adjust.gm import GMAdjust, AdjustHelper
+from geo_utils.common.datastructure import set_values
+from geotrafo.helmert import helmert2d
+from geotrafo.proj import cart2ell, ell2tm
+from geotrafo.trafo import trafo3d
+
+lds = {'default': {'phi': dill.loads(
+    b'\x80\x03cdill._dill\n_create_function\nq\x00(cdill._dill\n_load_type\nq\x01X\x08\x00\x00\x00CodeTypeq\x02\x85q\x03Rq\x04(K\x18K\x00K\x18K\x0eKCBp\x01\x00\x00t\x00|\n|\x0c|\x01\x14\x00t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x00\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00g\x01|\x0b|\x0c|\x01\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00|\x0c|\x00\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x01|\n|\x0c|\x03\x14\x00t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x02\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00g\x01|\x0b|\x0c|\x03\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00|\x0c|\x02\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x01|\n|\x0c|\x05\x14\x00t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x04\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00g\x01|\x0b|\x0c|\x05\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00|\x0c|\x04\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x01|\n|\x0c|\x07\x14\x00t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x06\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00g\x01|\x0b|\x0c|\x07\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00|\x0c|\x06\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x01|\n|\x0c|\t\x14\x00t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x08\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00g\x01|\x0b|\x0c|\t\x14\x00t\x02|\r\x83\x01\x14\x00\x17\x00|\x0c|\x08\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x01g\n\x83\x01S\x00q\x05N\x85q\x06X\x05\x00\x00\x00arrayq\x07X\x03\x00\x00\x00sinq\x08X\x03\x00\x00\x00cosq\t\x87q\n(X\x05\x00\x00\x00ys_01q\x0bX\x05\x00\x00\x00xs_01q\x0cX\x05\x00\x00\x00ys_02q\rX\x05\x00\x00\x00xs_02q\x0eX\x05\x00\x00\x00ys_03q\x0fX\x05\x00\x00\x00xs_03q\x10X\x05\x00\x00\x00ys_04q\x11X\x05\x00\x00\x00xs_04q\x12X\x05\x00\x00\x00ys_05q\x13X\x05\x00\x00\x00xs_05q\x14X\x02\x00\x00\x00dyq\x15X\x02\x00\x00\x00dxq\x16X\x01\x00\x00\x00mq\x17X\x05\x00\x00\x00alphaq\x18X\x05\x00\x00\x00yt_01q\x19X\x05\x00\x00\x00xt_01q\x1aX\x05\x00\x00\x00yt_02q\x1bX\x05\x00\x00\x00xt_02q\x1cX\x05\x00\x00\x00yt_03q\x1dX\x05\x00\x00\x00xt_03q\x1eX\x05\x00\x00\x00yt_04q\x1fX\x05\x00\x00\x00xt_04q X\x05\x00\x00\x00yt_05q!X\x05\x00\x00\x00xt_05q"tq#X\x15\x00\x00\x00<lambdifygenerated-3>q$X\x12\x00\x00\x00_lambdifygeneratedq%K\x01C\x02\x00\x01q&))tq\'Rq(}q)(X\x03\x00\x00\x00sinq*cnumpy.core\n_ufunc_reconstruct\nq+X\x05\x00\x00\x00numpyq,X\x03\x00\x00\x00sinq-\x86q.Rq/X\x03\x00\x00\x00cosq0h+h,X\x03\x00\x00\x00cosq1\x86q2Rq3X\x05\x00\x00\x00arrayq4cdill._dill\n_get_attr\nq5cdill._dill\n_import_module\nq6X\x15\x00\x00\x00numpy.core.multiarrayq7\x85q8Rq9X\x05\x00\x00\x00arrayq:\x86q;Rq<uh%NN}q=tq>Rq?.'),
+                   'A': dill.loads(
+                       b'\x80\x03cdill._dill\n_create_function\nq\x00(cdill._dill\n_load_type\nq\x01X\x08\x00\x00\x00CodeTypeq\x02\x85q\x03Rq\x04(K\x18K\x00K\x18K\x1bKCB\xc8\x03\x00\x00t\x00|\x0ct\x01|\r\x83\x01\x14\x00|\x0ct\x02|\r\x83\x01\x14\x00d\x01d\x01d\x01d\x01d\x01d\x01d\x01d\x01d\x02d\x01|\x01t\x02|\r\x83\x01\x14\x00|\x00t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x01\x14\x00t\x01|\r\x83\x01\x14\x00|\x0c|\x00\x14\x00t\x02|\r\x83\x01\x14\x00\x18\x00g\x0e|\x0c\x0b\x00t\x02|\r\x83\x01\x14\x00|\x0ct\x01|\r\x83\x01\x14\x00d\x01d\x01d\x01d\x01d\x01d\x01d\x01d\x01d\x01d\x02|\x01t\x01|\r\x83\x01\x14\x00|\x00t\x02|\r\x83\x01\x14\x00\x18\x00|\x0c\x0b\x00|\x01\x14\x00t\x02|\r\x83\x01\x14\x00|\x0c|\x00\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x0ed\x01d\x01|\x0ct\x01|\r\x83\x01\x14\x00|\x0ct\x02|\r\x83\x01\x14\x00d\x01d\x01d\x01d\x01d\x01d\x01d\x02d\x01|\x03t\x02|\r\x83\x01\x14\x00|\x02t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x03\x14\x00t\x01|\r\x83\x01\x14\x00|\x0c|\x02\x14\x00t\x02|\r\x83\x01\x14\x00\x18\x00g\x0ed\x01d\x01|\x0c\x0b\x00t\x02|\r\x83\x01\x14\x00|\x0ct\x01|\r\x83\x01\x14\x00d\x01d\x01d\x01d\x01d\x01d\x01d\x01d\x02|\x03t\x01|\r\x83\x01\x14\x00|\x02t\x02|\r\x83\x01\x14\x00\x18\x00|\x0c\x0b\x00|\x03\x14\x00t\x02|\r\x83\x01\x14\x00|\x0c|\x02\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x0ed\x01d\x01d\x01d\x01|\x0ct\x01|\r\x83\x01\x14\x00|\x0ct\x02|\r\x83\x01\x14\x00d\x01d\x01d\x01d\x01d\x02d\x01|\x05t\x02|\r\x83\x01\x14\x00|\x04t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x05\x14\x00t\x01|\r\x83\x01\x14\x00|\x0c|\x04\x14\x00t\x02|\r\x83\x01\x14\x00\x18\x00g\x0ed\x01d\x01d\x01d\x01|\x0c\x0b\x00t\x02|\r\x83\x01\x14\x00|\x0ct\x01|\r\x83\x01\x14\x00d\x01d\x01d\x01d\x01d\x01d\x02|\x05t\x01|\r\x83\x01\x14\x00|\x04t\x02|\r\x83\x01\x14\x00\x18\x00|\x0c\x0b\x00|\x05\x14\x00t\x02|\r\x83\x01\x14\x00|\x0c|\x04\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x0ed\x01d\x01d\x01d\x01d\x01d\x01|\x0ct\x01|\r\x83\x01\x14\x00|\x0ct\x02|\r\x83\x01\x14\x00d\x01d\x01d\x02d\x01|\x07t\x02|\r\x83\x01\x14\x00|\x06t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\x07\x14\x00t\x01|\r\x83\x01\x14\x00|\x0c|\x06\x14\x00t\x02|\r\x83\x01\x14\x00\x18\x00g\x0ed\x01d\x01d\x01d\x01d\x01d\x01|\x0c\x0b\x00t\x02|\r\x83\x01\x14\x00|\x0ct\x01|\r\x83\x01\x14\x00d\x01d\x01d\x01d\x02|\x07t\x01|\r\x83\x01\x14\x00|\x06t\x02|\r\x83\x01\x14\x00\x18\x00|\x0c\x0b\x00|\x07\x14\x00t\x02|\r\x83\x01\x14\x00|\x0c|\x06\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x0ed\x01d\x01d\x01d\x01d\x01d\x01d\x01d\x01|\x0ct\x01|\r\x83\x01\x14\x00|\x0ct\x02|\r\x83\x01\x14\x00d\x02d\x01|\tt\x02|\r\x83\x01\x14\x00|\x08t\x01|\r\x83\x01\x14\x00\x17\x00|\x0c|\t\x14\x00t\x01|\r\x83\x01\x14\x00|\x0c|\x08\x14\x00t\x02|\r\x83\x01\x14\x00\x18\x00g\x0ed\x01d\x01d\x01d\x01d\x01d\x01d\x01d\x01|\x0c\x0b\x00t\x02|\r\x83\x01\x14\x00|\x0ct\x01|\r\x83\x01\x14\x00d\x01d\x02|\tt\x01|\r\x83\x01\x14\x00|\x08t\x02|\r\x83\x01\x14\x00\x18\x00|\x0c\x0b\x00|\t\x14\x00t\x02|\r\x83\x01\x14\x00|\x0c|\x08\x14\x00t\x01|\r\x83\x01\x14\x00\x18\x00g\x0eg\n\x83\x01S\x00q\x05NK\x00K\x01\x87q\x06X\x05\x00\x00\x00arrayq\x07X\x03\x00\x00\x00cosq\x08X\x03\x00\x00\x00sinq\t\x87q\n(X\x05\x00\x00\x00ys_01q\x0bX\x05\x00\x00\x00xs_01q\x0cX\x05\x00\x00\x00ys_02q\rX\x05\x00\x00\x00xs_02q\x0eX\x05\x00\x00\x00ys_03q\x0fX\x05\x00\x00\x00xs_03q\x10X\x05\x00\x00\x00ys_04q\x11X\x05\x00\x00\x00xs_04q\x12X\x05\x00\x00\x00ys_05q\x13X\x05\x00\x00\x00xs_05q\x14X\x02\x00\x00\x00dyq\x15X\x02\x00\x00\x00dxq\x16X\x01\x00\x00\x00mq\x17X\x05\x00\x00\x00alphaq\x18X\x05\x00\x00\x00yt_01q\x19X\x05\x00\x00\x00xt_01q\x1aX\x05\x00\x00\x00yt_02q\x1bX\x05\x00\x00\x00xt_02q\x1cX\x05\x00\x00\x00yt_03q\x1dX\x05\x00\x00\x00xt_03q\x1eX\x05\x00\x00\x00yt_04q\x1fX\x05\x00\x00\x00xt_04q X\x05\x00\x00\x00yt_05q!X\x05\x00\x00\x00xt_05q"tq#X\x15\x00\x00\x00<lambdifygenerated-4>q$X\x12\x00\x00\x00_lambdifygeneratedq%K\x01C\x02\x00\x01q&))tq\'Rq(}q)(X\x03\x00\x00\x00cosq*cnumpy.core\n_ufunc_reconstruct\nq+X\x05\x00\x00\x00numpyq,X\x03\x00\x00\x00cosq-\x86q.Rq/X\x03\x00\x00\x00sinq0h+h,X\x03\x00\x00\x00sinq1\x86q2Rq3X\x05\x00\x00\x00arrayq4cdill._dill\n_get_attr\nq5cdill._dill\n_import_module\nq6X\x15\x00\x00\x00numpy.core.multiarrayq7\x85q8Rq9X\x05\x00\x00\x00arrayq:\x86q;Rq<uh%NN}q=tq>Rq?.')},
+       'second': {'phi': dill.loads(
+           b'\x80\x03cdill._dill\n_create_function\nq\x00(cdill._dill\n_load_type\nq\x01X\x08\x00\x00\x00CodeTypeq\x02\x85q\x03Rq\x04(K\x18K\x00K\x18K\x0bKCC0t\x00|\x00g\x01|\x01g\x01|\x02g\x01|\x03g\x01|\x04g\x01|\x05g\x01|\x06g\x01|\x07g\x01|\x08g\x01|\tg\x01g\n\x83\x01S\x00q\x05N\x85q\x06X\x05\x00\x00\x00arrayq\x07\x85q\x08(X\x05\x00\x00\x00ys_01q\tX\x05\x00\x00\x00xs_01q\nX\x05\x00\x00\x00ys_02q\x0bX\x05\x00\x00\x00xs_02q\x0cX\x05\x00\x00\x00ys_03q\rX\x05\x00\x00\x00xs_03q\x0eX\x05\x00\x00\x00ys_04q\x0fX\x05\x00\x00\x00xs_04q\x10X\x05\x00\x00\x00ys_05q\x11X\x05\x00\x00\x00xs_05q\x12X\x02\x00\x00\x00dyq\x13X\x02\x00\x00\x00dxq\x14X\x01\x00\x00\x00mq\x15X\x05\x00\x00\x00alphaq\x16X\x05\x00\x00\x00yo_01q\x17X\x05\x00\x00\x00xo_01q\x18X\x05\x00\x00\x00yo_02q\x19X\x05\x00\x00\x00xo_02q\x1aX\x05\x00\x00\x00yo_03q\x1bX\x05\x00\x00\x00xo_03q\x1cX\x05\x00\x00\x00yo_04q\x1dX\x05\x00\x00\x00xo_04q\x1eX\x05\x00\x00\x00yo_05q\x1fX\x05\x00\x00\x00xo_05q tq!X\x15\x00\x00\x00<lambdifygenerated-5>q"X\x12\x00\x00\x00_lambdifygeneratedq#K\x01C\x02\x00\x01q$))tq%Rq&}q\'X\x05\x00\x00\x00arrayq(cdill._dill\n_get_attr\nq)cdill._dill\n_import_module\nq*X\x15\x00\x00\x00numpy.core.multiarrayq+\x85q,Rq-X\x05\x00\x00\x00arrayq.\x86q/Rq0sh#NN}q1tq2Rq3.'),
+                  'A': dill.loads(
+                      b'\x80\x03cdill._dill\n_create_function\nq\x00(cdill._dill\n_load_type\nq\x01X\x08\x00\x00\x00CodeTypeq\x02\x85q\x03Rq\x04(K\x18K\x00K\x18K\x18KCB4\x01\x00\x00t\x00d\x01d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x01d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x02d\x01d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x02d\x02d\x01d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x02d\x02d\x02d\x01d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x02d\x02d\x02d\x02d\x01d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x02d\x02d\x02d\x02d\x02d\x01d\x02d\x02d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x01d\x02d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x01d\x02d\x02d\x02d\x02d\x02g\x0ed\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x02d\x01d\x02d\x02d\x02d\x02g\x0eg\n\x83\x01S\x00q\x05NK\x01K\x00\x87q\x06X\x05\x00\x00\x00arrayq\x07\x85q\x08(X\x05\x00\x00\x00ys_01q\tX\x05\x00\x00\x00xs_01q\nX\x05\x00\x00\x00ys_02q\x0bX\x05\x00\x00\x00xs_02q\x0cX\x05\x00\x00\x00ys_03q\rX\x05\x00\x00\x00xs_03q\x0eX\x05\x00\x00\x00ys_04q\x0fX\x05\x00\x00\x00xs_04q\x10X\x05\x00\x00\x00ys_05q\x11X\x05\x00\x00\x00xs_05q\x12X\x02\x00\x00\x00dyq\x13X\x02\x00\x00\x00dxq\x14X\x01\x00\x00\x00mq\x15X\x05\x00\x00\x00alphaq\x16X\x05\x00\x00\x00yo_01q\x17X\x05\x00\x00\x00xo_01q\x18X\x05\x00\x00\x00yo_02q\x19X\x05\x00\x00\x00xo_02q\x1aX\x05\x00\x00\x00yo_03q\x1bX\x05\x00\x00\x00xo_03q\x1cX\x05\x00\x00\x00yo_04q\x1dX\x05\x00\x00\x00xo_04q\x1eX\x05\x00\x00\x00yo_05q\x1fX\x05\x00\x00\x00xo_05q tq!X\x15\x00\x00\x00<lambdifygenerated-6>q"X\x12\x00\x00\x00_lambdifygeneratedq#K\x01C\x02\x00\x01q$))tq%Rq&}q\'X\x05\x00\x00\x00arrayq(cdill._dill\n_get_attr\nq)cdill._dill\n_import_module\nq*X\x15\x00\x00\x00numpy.core.multiarrayq+\x85q,Rq-X\x05\x00\x00\x00arrayq.\x86q/Rq0sh#NN}q1tq2Rq3.')}}
+
+lds_gm = {'default': {'phi': dill.loads(
+    b'\x80\x03cdill._dill\n_create_function\nq\x00(cdill._dill\n_load_type\nq\x01X\x08\x00\x00\x00CodeTypeq\x02\x85q\x03Rq\x04(K\x08K\x00K\x08K\x06KCCPt\x00|\x00|\x02|\x07\x14\x00t\x01|\x03\x83\x01\x14\x00\x17\x00|\x02|\x06\x14\x00t\x02|\x03\x83\x01\x14\x00\x17\x00g\x01|\x01|\x02|\x07\x14\x00t\x02|\x03\x83\x01\x14\x00\x17\x00|\x02|\x06\x14\x00t\x01|\x03\x83\x01\x14\x00\x18\x00g\x01g\x02\x83\x01S\x00q\x05N\x85q\x06X\x05\x00\x00\x00arrayq\x07X\x03\x00\x00\x00sinq\x08X\x03\x00\x00\x00cosq\t\x87q\n(X\x02\x00\x00\x00dyq\x0bX\x02\x00\x00\x00dxq\x0cX\x01\x00\x00\x00mq\rX\x05\x00\x00\x00alphaq\x0eX\x03\x00\x00\x00y_tq\x0fX\x03\x00\x00\x00x_tq\x10X\x03\x00\x00\x00y_sq\x11X\x03\x00\x00\x00x_sq\x12tq\x13X\x15\x00\x00\x00<lambdifygenerated-3>q\x14X\x12\x00\x00\x00_lambdifygeneratedq\x15K\x01C\x02\x00\x01q\x16))tq\x17Rq\x18}q\x19(X\x05\x00\x00\x00arrayq\x1acdill._dill\n_get_attr\nq\x1bcdill._dill\n_import_module\nq\x1cX\x15\x00\x00\x00numpy.core.multiarrayq\x1d\x85q\x1eRq\x1fX\x05\x00\x00\x00arrayq \x86q!Rq"X\x03\x00\x00\x00sinq#cnumpy.core\n_ufunc_reconstruct\nq$X\x05\x00\x00\x00numpyq%X\x03\x00\x00\x00sinq&\x86q\'Rq(X\x03\x00\x00\x00cosq)h$h%X\x03\x00\x00\x00cosq*\x86q+Rq,uh\x15NN}q-tq.Rq/.'),
+                      'A': dill.loads(
+                          b'\x80\x03cdill._dill\n_create_function\nq\x00(cdill._dill\n_load_type\nq\x01X\x08\x00\x00\x00CodeTypeq\x02\x85q\x03Rq\x04(K\x08K\x00K\x08K\tKCC~t\x00d\x01d\x02|\x07t\x01|\x03\x83\x01\x14\x00|\x06t\x02|\x03\x83\x01\x14\x00\x17\x00|\x02|\x07\x14\x00t\x02|\x03\x83\x01\x14\x00|\x02|\x06\x14\x00t\x01|\x03\x83\x01\x14\x00\x18\x00g\x04d\x02d\x01|\x07t\x02|\x03\x83\x01\x14\x00|\x06t\x01|\x03\x83\x01\x14\x00\x18\x00|\x02\x0b\x00|\x07\x14\x00t\x01|\x03\x83\x01\x14\x00|\x02|\x06\x14\x00t\x02|\x03\x83\x01\x14\x00\x18\x00g\x04g\x02\x83\x01S\x00q\x05NK\x01K\x00\x87q\x06X\x05\x00\x00\x00arrayq\x07X\x03\x00\x00\x00sinq\x08X\x03\x00\x00\x00cosq\t\x87q\n(X\x02\x00\x00\x00dyq\x0bX\x02\x00\x00\x00dxq\x0cX\x01\x00\x00\x00mq\rX\x05\x00\x00\x00alphaq\x0eX\x03\x00\x00\x00y_tq\x0fX\x03\x00\x00\x00x_tq\x10X\x03\x00\x00\x00y_sq\x11X\x03\x00\x00\x00x_sq\x12tq\x13X\x15\x00\x00\x00<lambdifygenerated-4>q\x14X\x12\x00\x00\x00_lambdifygeneratedq\x15K\x01C\x02\x00\x01q\x16))tq\x17Rq\x18}q\x19(X\x05\x00\x00\x00arrayq\x1acdill._dill\n_get_attr\nq\x1bcdill._dill\n_import_module\nq\x1cX\x15\x00\x00\x00numpy.core.multiarrayq\x1d\x85q\x1eRq\x1fX\x05\x00\x00\x00arrayq \x86q!Rq"X\x03\x00\x00\x00sinq#cnumpy.core\n_ufunc_reconstruct\nq$X\x05\x00\x00\x00numpyq%X\x03\x00\x00\x00sinq&\x86q\'Rq(X\x03\x00\x00\x00cosq)h$h%X\x03\x00\x00\x00cosq*\x86q+Rq,uh\x15NN}q-tq.Rq/.')}}
+
+
+def simple_gm(source, target, rot_approx=0., sigma_target=None, cmd_output=False, load_functions=False):
+    # parameters
+    dx, dy, m, alpha = sp.symbols('dx dy m alpha')
+    # constants
+    xs, ys = sp.symbols('x_s y_s')
+    # observations
+    xt, yt = sp.symbols('x_t y_t')
+
+    # define the model
+    R = sp.Matrix([[sp.cos(alpha), sp.sin(alpha)],
+                   [-sp.sin(alpha), sp.cos(alpha)]])
+    phi = sp.Matrix([[dy], [dx]]) + m * R @ sp.Matrix([[ys], [xs]])
+
+    gmc = GMModelConfig()
+    gmc.add_model_autodiff(phi, (dy, dx, m, alpha), (yt, xt), c=(ys, xs))
+
+    # create the solver
+    solver = GMAdjust(gmc, max_iterations=100, verbose=False, journal=False)
+
+    solver.set_initial_params(mean(target, axis=0).tolist() + [1, rot_approx])
+    # target system are measurements
+    if sigma_target is None:
+        solver.add_data(target)
+    else:
+        var0_prio = mean(sigma_target[nonzero(sigma_target)])
+        solver.add_data(target, sigma_ll=sigma_target, var0=var0_prio)
+
+    # source systems as constants
+    solver.add_constants(source)
+
+    result = solver.solve()
+
+    if cmd_output:
+        result.model.print_info()
+        result.model.print_summary()
+
+        result.parameters.print()
+        result.observations.print()
+
+    return result, solver
+
+
+def gh(source, target, sigma_source=None, sigma_target=None, cmd_output=False, consts=None):
+    # parameters
+    dx, dy, m, alpha = sp.symbols('dx dy m alpha')
+    # observations
+    xs, ys, xt, yt = sp.symbols('x_s y_s x_t y_t')
+
+    # define the model
+    R = sp.Matrix([[sp.cos(alpha), sp.sin(alpha)],
+                   [-sp.sin(alpha), sp.cos(alpha)]])
+    phi = sp.Matrix([[dy], [dx]]) + m * R @ sp.Matrix([[ys], [xs]]) - sp.Matrix([[yt], [xt]])
+
+    # create the solver
+    solver = GHAdjust(max_iterations=30)
+    solver.add_model_autodiff(phi, (dy, dx, m, alpha), (ys, xs, yt, xt))
+
+    solver.set_initial_params(mean(target, axis=0).tolist() + [1, 0])
+    # target system are measurements
+    if sigma_source is not None and sigma_target is not None:
+        var0_prio = mean([mean(sigma_target[nonzero(sigma_target)]), mean(sigma_source[nonzero(sigma_source)])])
+        solver.add_data(hstack((source, target)), sigma_ll=block_diag(sigma_source, sigma_target),
+                        var0=var0_prio)
+    else:
+        solver.add_data(hstack((source, target)))
+
+    # hack to make consts
+    if consts is not None:
+        solver._coidx = ~consts
+    result = solver.solve()
+
+    if cmd_output:
+        result.model.print_info()
+        result.model.print_summary()
+
+        result.parameters.print()
+        result.observations.print()
+        result.model.print_timing()
+
+    return result, solver
+
+
+def gm_extended(source, target, rot_approx=0., cmd_output=False, sigma_source=None, sigma_target=None,
+                load_functions=False):
+    pts_t = zeros((target.shape[0],), dtype=[('pt', 'U10'), ('y', float64), ('x', float64), ('fix', bool)])
+    pts_t['pt'] = ['0{}'.format(x) for x in range(1, target.shape[0] + 1)]
+
+    pts_s = zeros((source.shape[0],), dtype=[('pt', 'U10'), ('y', float64), ('x', float64), ('fix', bool)])
+    pts_s['pt'] = ['0{}'.format(x) for x in range(1, source.shape[0] + 1)]
+
+    set_values(pts_t, ['y', 'x'], target)
+    set_values(pts_s, ['y', 'x'], source)
+
+    if load_functions:
+        phi1x, phi2x = lds['default']['phi'], lds['second']['phi']
+        A1x, A2x = lds['default']['A'], lds['second']['A']
+    else:
+        phi1x, phi2x = None, None
+        A1x, A2x = None, None
+
+    #######################################################################
+    # FIRST BLOCK
+    # define the model
+    # parameters
+    dx, dy, m, alpha = sp.symbols('dx dy m alpha')
+    # coordinates in source system
+    xs, ys = sp.symbols('x_s y_s')
+    # observations
+    xt, yt = sp.symbols('x_t y_t')
+    R = sp.Matrix([[sp.cos(alpha), sp.sin(alpha)],
+                   [-sp.sin(alpha), sp.cos(alpha)]])
+    phi = sp.Matrix([[dy], [dx]]) + m * R @ sp.Matrix([[ys], [xs]])
+    solver = AdjustHelper.add_block(pts_s, pts_t, phi, (ys, xs), ['pt'], col_name='pt',
+                                    col_param=['y', 'x'], col_obs=['y', 'x'],  # where to get data from
+                                    template_param='ys_{0} xs_{0}', template_obs='yt_{0} xt_{0}', col_obs_name='pt',
+                                    extra_params=[dy, dx, m, alpha],
+                                    extra_params_initial=mean(AdjustHelper._get_data(pts_t, ['y', 'x']),
+                                                              axis=0).tolist() + [1, rot_approx],
+                                    phix=phi1x, Ax=A1x)
+
+    #######################################################################
+    # SECOND BLOCK
+    # define the point observation model
+    y, x = sp.symbols('y x')
+    phi = sp.Matrix([[y], [x]])
+
+    solver = AdjustHelper.add_block(pts_s, pts_s, phi, (y, x), ['pt'], col_name='pt',
+                                    col_param=['y', 'x'], col_obs=['y', 'x'],  # where to get data from
+                                    template_param='ys_{0} xs_{0}', template_obs='yo_{0} xo_{0}', col_obs_name='pt',
+                                    solver=solver,
+                                    extra_params=[dy, dx, m, alpha],
+                                    extra_params_initial=mean(AdjustHelper._get_data(pts_t, ['y', 'x']),
+                                                              axis=0).tolist() + [1, 0],
+                                    name='second', phix=phi2x, Ax=A2x)
+
+    var0_prio = mean([mean(sigma_target[nonzero(sigma_target)]), mean(sigma_source[nonzero(sigma_source)])])
+
+    if sigma_target is not None:
+        solver.set_stochastic_model(sigma_target, var0=var0_prio, name='default')
+    if sigma_source is not None:
+        solver.set_stochastic_model(sigma_source, var0=var0_prio, name='second')
+
+    result = solver.solve()
+
+    if cmd_output:
+        result.model.print_info()
+        result.model.print_summary()
+
+        result.parameters.print()
+        result.observations.print()
+
+    return result, solver
+
+
+def sample_data():
+    etrf = array([[4258271.1157, 1088167.7779, 4607249.5689],
+                  [4262801.9015, 1076102.185, 4605970.0599],
+                  [4259977.9534, 1084261.2503, 4606616.7628],
+                  [4263266.4064, 1076352.6091, 4605576.0917],
+                  [4256443.3778, 1083479.7757, 4610136.0529],
+                  [4261597.274, 1076829.2662, 4606884.7337],
+                  [4260493.16, 1077348.7093, 4607964.1512],
+                  [4260132.6555, 1086080.83, 4606072.9589],
+                  [4258818.1931, 1080796.4907, 4608626.6335]])
+
+    gk = array([[7.68614800e+04, 5.15634790e+06, 4.34030000e+02],
+                [6.40750400e+04, 5.15428778e+06, 4.82920000e+02],
+                [7.26661800e+04, 5.15536113e+06, 4.48300000e+02],
+                [6.42108800e+04, 5.15364684e+06, 5.49090000e+02],
+                [7.27202900e+04, 5.16040908e+06, 5.15580000e+02],
+                [6.50605300e+04, 5.15564602e+06, 4.65710000e+02],
+                [6.58192900e+04, 5.15708130e+06, 6.00690000e+02],
+                [7.44009100e+04, 5.15457319e+06, 4.65790000e+02],
+                [6.95611200e+04, 5.15814276e+06, 5.47260000e+02]])
+
+    rho = 1 / 3600 / 180 * pi
+    params_etrf_mgi = [-577.326, -90.129, -463.919, 5.137 * rho, 1.474 * rho, 5.297 * rho, 1 - 0.0000024232]
+    etrf2 = trafo3d(etrf, params_etrf_mgi)
+    etrf_ell = cart2ell(etrf2, ellipsoid='bessel')
+    etrf_gk = ell2tm(etrf_ell, cm=13 + 1 / 3)
+
+    # centroid reduction
+    gk = gk - mean(gk, axis=0)
+    etrf_gk = etrf_gk - mean(etrf_gk, axis=0)
+
+    # reference solution helmert2d from trafo_proj
+    tp, ac, tr, _ = helmert2d(etrf_gk[:, :2], gk[:, :2])
+    print(tp)
+    return gk, etrf_gk
+
+
+if __name__ == '__main__':
+    gk, etrf_gk = sample_data()
+    r, s = simple_gm(etrf_gk[:, :2], gk[:, :2], cmd_output=False, rot_approx=-1.)
+    r.model.print_summary()
+    r.parameters.print()
+    xs, ls, _ = s.model.get_syms()
+    r.observations.set_obs_config(tuple(ls),
+                                  ['m', 'm'],
+                                  ['x', 'y'],
+                                  cxs=[lambda x: x] * 2,
+                                  formats=['.5f'] * 2, groups=['Coordinate'] * 2)
+    r.observations.print()
+    # consts = zeros((gk.shape[0], 4), dtype=bool)
+    # consts[0, :2] = True
+    # r2, s2 = gh(etrf_gk[:, :2], gk[:, :2], cmd_output=True, consts=consts.flatten())
+    # # gm_extended(etrf_gk[:, :2], gk[:, :2], cmd_output=True)
+
+    print('OK')

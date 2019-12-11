@@ -1,0 +1,80 @@
+05.12.2019 TU Wien - Finn Linzer
+
+$ roscore
+$ rosrun rviz rviz
+
+/map ist unser globales Koordinatensystem, 
+drauf wird ein statisches Koordinatensystem gesetzt, dass die Pose der Roboterarm-Base beschreibt (/base_link)
+Diese Info erhält man durch das Transformationsverfahren (siehe manuals, ur_lt_matlab,..)
+Aktuell 5.12.2019, aus Matlab, alle Werte Radiant und Meter:
+
+UNBESTÄTIGT BISHER! (VOR ALLEM DIE ACHSENNAMEN UND LT zu UR in rz-Wert) (diese Zeile löschen wenn valide)
+
+>> adj.x
+
+ans =
+
+   -0.0029 (LT zu UR in rx)
+    0.0052 (LT zu UR in ry)
+    0.6108 (LT zu UR in rz)
+    6.0952 (LT zu UR in delta_X)
+    4.4861 (LT zu UR in delta_Y)
+   -0.6137 (LT zu UR in delta_Z)
+    0.0163 (Leverarm X)
+   -0.0045 (Leverarm Y)
+    0.3695 (Leverarm Z)
+    
+
+
+$ rosrun tf static_transform_publisher 6.0952 4.4861 -0.6137 0.6108 0.0052 -0.0029 map base_link 300
+
+Die kinematische Kette kann nun mit DH selbst berechnet werden (Koordinatensysteme Ausrichtung ungetesten), siehe /akig/source/ForwardKinematic/Simple/forward_kinematic.py 
+Diese python öffnen und ganz unten die 6 Winkelstellungen (die man zb aus MP_server.py hat) für die eine Stellung eingeben, dann:
+$ python3 forward_kinematic.py
+Die ersten 3 Werte sind X,Y,Z die weiteren 9 Werte ist die 3x3 Verdrehungsmatrix. Diese kann zb in Matlab in rx,ry,rz zurück gerechnet werden.
+Dann wäre tool0 berechnet und könnte tool0_calc heißen und die Kette vervollständigen:
+$ rosrun tf static_transform_publisher 0.57024 0.09803 0.31185 0.21768 -1.70605 -1.87305 base_link tool0_calc 300
+oder durch hinzuziehen des echten Roboters auf base_link aufgesetzt werden (Koordinatensystem noch nicht plausibilisiert)
+$ roslaunch igros_ur move_juri.launch joints_file:=/home/finn/workspace_ur/src/igros_ur/trajectories/joints_trafo.txt speed_factor:=0.3
+(einfach nicht y oder n drücken bei Aufforderung, sondern laufen lassen). Es kann auch ein Bagfile genutzt werden.
+
+Dadurch wird der Link zwischen /base_link und /tool0_controller hergestellt.
+
+Der Leverarm wird nun angebracht (siehe Leverarm X,Y,Z Werte sind aus der Ausgleichung).
+Die Verdrehungswerte kommen bisher nicht aus der Ausgleichung, sondern wurden mit 
+($ rosrun tf tf_echo /tool0_controller /tscan) erzeugt. (/tool0_calc-> wenn mit DH Parametern berechnet, /tool0_controller->Was UR behauptet (Tablet, UR eigene DH Parameter), /tool0->Wohl auch aus DH berechnet)
+(/tscan kam dabei aus dem TScanClient.exe Ausgabefenster (X,Y,Z,RotX,RotY,RotZ) und wurde mit diesen Werten als statisches System ins ROS gebracht, beispiel:)
+($ rosrun tf static_transform_publisher 2.509360 -0.15338 -0.575646 -2.602 0.092 1.52 map tscan 300)
+(Das System sollte für diese Berechnung nicht bewegt werden!!!)
+(daraus ergeben sich die Verdrehungen (-1.032 -0.814 -1.748), UNBESTÄTIGT)
+
+$ rosrun tf static_transform_publisher 0.0163 -0.0045 0.3695 -1.032 -0.814 -1.748 tool0_controller tscan_calc 300
+
+Auf den /tscan_calc frame können jetzt die SMO TerminalFenster Scandaten aufgesetzt werden.
+
+---
+EINZELNE 
+EINZELNE
+EINZELNE Punktwolke, mit (/akig/source/global_tscan_ptcl/publishSingleTScanCenter/publishSinglePtcl.py:
+$ python publishSinglePtcl.py (in der .py darauf achten, dass auf den richtigen Frame gemapped wird)
+
+Diese ROS-Intern Transformieren mit:
+$ rosrun tf_points_global transform_point2pointcloud _ptcl2_global_frame:=map _ptcl2_local_frame:=tscan_calc _ptcl2_input_topic:=/tscan_cloud2 _ptcl2_output_topic:=/tscan_cloud2_global _drop_when_same_position:=false
+Und Abfangen (als Lesbare Datei) mit:
+$ rosrun pcl_ros pointcloud_to_pcd input:=/tscan_cloud2_global (speichert an der Stelle, wo dieser Befehl ausgeführt wird).
+
+---
+MEHRERE
+MEHRERE
+MEHRERE
+Hier ist jetzt die Idee mit SMO T-Scan-Zentrische Punktwolken aufzunehmen (Terminalprogramm)
+und
+den dazu gehörenden Verfahrweg des Roboterarms als bagfile zu recorden.
+
+Die mit SMO aufgenommenen Punkte haben einen Zeitstempel der immer von 0 los geht. Davon ausgehend, dass keine Zeitdrift über diesen Zeitraum von T-Scan und Roboterarm-Rosbag passiert, muss nur der richtige
+Zeitpunkt fürs losstarten der SMO-Daten gewählt werden und auf der richtigen Zeitachse ausgegeben werden.
+
+Wenn das dass Programm kann (das Zeitproblem kann komplex sein), dann werden die Punktwolken auf den richtigen Frame (zb:/tscan_calc) gemapped, und dass im Bezug zur anlaufenden Rosbag die den Verfahrweg beschreibt.
+
+
+

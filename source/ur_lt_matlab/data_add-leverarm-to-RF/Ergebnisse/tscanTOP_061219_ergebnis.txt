@@ -1,0 +1,51 @@
+Transformation zwischen LT und T-Scan TOP (also oben auf) Prisma!
+Die ist sinnvoll, falls das Singal vom LT-Laser mal unterbrochen werden solle, um die Position des Prismas wieder zu finden.
+Durch die ganze Kinematische Kette ist die Position des Prismas dann immer im LT System bekannt.
+     BEI 0.5 mm Genauigkeit 
+     und 14 Punkten
+it =
+
+    10
+
+
+GT_True =
+
+     1
+
+
+GT_Apost =
+
+          1.14947109102828
+    
+
+    
+>> adj.x
+
+ans =
+
+      -0.00355785758650152
+       0.00494889098665271
+           0.6108664181121
+          6.10815618945774
+          4.49383694135978
+        -0.614609202466652
+        0.0782773568981882
+        -0.133329722750903
+          0.27161253599887
+
+>> adj.stdX
+
+ans =
+
+      0.000468681713917662
+      0.000369403128397987
+      0.000406431985428875
+      0.000439971165982749
+       0.00029263166391351
+      0.000353913736812476
+      0.000369907589180393
+      0.000405086222901519
+      0.000328312962845009
+
+      
+      in Meter alles

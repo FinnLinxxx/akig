@@ -1,0 +1,69 @@
+05.12.2019 TU Wien - Finn Linzer
+
+In Matlab lassen sich mit apply_trafo_leverarm.m (Ordner /akig/source/ur_lt_matlab) Transformationen berechnen (siehe readme.txt im gleichen Ordner).
+Über data_trafo_input.m (Ordner /akig/source/ur_lt_matlab/data_add-leverarm-to-RF (RF steht für RoboterFlansch)) werden 2 Dateien eingelesen.
+
+Die eine enthält die Roboterposen und wird wie gewohnt über die MP_server.py bezogen (siehe /akig/source/MP_SERVER/readme.txt).
+Die andere Datei enthält normalerweise die Position eines CCR (oder ähnlich)(mit T-Probe 6DOF oder T-Scan 6DOF bisher ungetestet) - in unserem Fall können wir eine andere Datenquelle nutzen
+die die absolute Position des T-Scan Scanlinienursprungs angibt (Objektivsymbol geschnitten mit Scanlinienlaserstrahl). Diese Info wird bis zu 10hz (in unserem Fall 1hz, siehe code) als 6DOF ausgegeben.
+Bisher interessiert uns aber nur die Koordinate (weil das andere eben ungetestet ist), die Verdrehwinkel kommen grade noch woanders her.
+Diese Info wird ausgegeben von dem TScanClient und zwar in das Textfeld (Programm /akig/source/TScanClient.exe), dieses Programm läuft analog zum SA-Client. Es muss also das Terminalfenster und T-Scan Collect währendessen laufen,
+außerdem muss der Laserbeam eingeschaltet sein. Mehr dazu in einer anderen Anleitung (/akig/manual/T-ScanUsage_Kurzanleitung, der TScanClient.exe Teil).
+
+Das sieht dann so aus,
+Auszug:
+Cnt=1  X=-4252.303 Y= 5903.964 Z= -398.488 RotX=    2.226 RotY=   -0.028 RotZ=   -2.776
+Cnt=1  X=-4252.298 Y= 5903.959 Z= -398.479 RotX=    2.226 RotY=   -0.028 RotZ=   -2.776
+Cnt=1  X=-4252.293 Y= 5903.969 Z= -398.478 RotX=    2.226 RotY=   -0.028 RotZ=   -2.776
+Cnt=1  X=-4252.302 Y= 5903.963 Z= -398.477 RotX=    2.226 RotY=   -0.028 RotZ=   -2.776
+Cnt=1  X=-4252.297 Y= 5903.967 Z= -398.472 RotX=    2.226 RotY=   -0.028 RotZ=   -2.776
+
+Wie gesagt, pro Sekunde (aktuell) eine Pose (oder Position bisher). Daher mit dem Tablet (MP_Server muss laufen), MP_Client starten und passend zum "Continue" drücken die 
+hier gezeigten Daten für den Lasertracker aus dem Datenfeld kopieren (Strg+C, Strg+V in ein Textprogramm).
+
+Jetzt muss man darauß nur eine für das .m File passende Datei machen.
+
+!!! Siehe auch Transformation_LT2UR_berechnen.txt (/akig/manual)
+
+Auszug:
+1 6262.553 4115.764 -607.598
+2 6152.546 4093.119 -341.704
+3 5903.963 4252.302 -398.477
+..
+
+Auf grobe Fehler achten.
+
+Aktuelle Werte (zuletzt über 9 Punkte) aus Matlab:
+>> adj.x
+
+ans =
+
+   -0.0029
+    0.0052
+    0.6108
+    6.0952
+    4.4861
+   -0.6137
+    0.0163
+   -0.0045
+    0.3695
+    
+>> adj.stdX
+
+ans =
+
+   1.0e-03 *
+
+    0.3962
+    0.3562
+    0.3590
+    0.3498
+    0.3516
+    0.4117
+    0.3547
+    0.4051
+    0.3678
+
+
+Am Nachmittag des 05.12.2019 wurde eine weitere Epoche mit ähnlicher Struktur (X,Y,Z,rx,ry,rz, gleicher Leveram) durchgeführt, mit 27 Standpunkten.
+

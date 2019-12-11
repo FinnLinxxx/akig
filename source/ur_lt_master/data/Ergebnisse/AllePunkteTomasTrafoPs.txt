@@ -1,0 +1,62 @@
+ Messung vom 05.12.19
+ 
+Alle 47 Punkt angefahren, von Tomas joint_trafo.txt
+
+J006 ist ein Ausreißer!
+
+
+---
+
+
+# remove outliers
+for i in ['J006']:
+    df_pts.drop(i, inplace=True, errors='ignore')
+    df_pts_ur.drop(i, inplace=True, errors='ignore')
+
+obs = hstack((df_pts_ur[['x', 'y', 'z', 'ro', 'pi', 'ya']].values, df_pts[['x', 'y', 'z']].values))
+obs.shape[0]
+
+---
+
+======================================================
+ Result Summary 
+======================================================
+ - Convergence: 				  [ OK]
+    ├ # Iterations: 			    13
+    └ Criterium: 					  1.000e-12
+ - Hauptprobe: 				  [ OK]
+    └ Max Eps: 					  -6.661e-16
+ - Globaltest: 				  [NOK]
+    ├ Test: 						  eq 
+    ├ Var Prio: 					  0.000
+    ├ Var Post: 					  0.000
+    ├ Ratio:    					  0.490
+    ├ Alpha: 						  0.100
+    └ Testquantity: 				  0.801 < 0.490 < 1.217
+ - Residuals:
+    ├ SSE (vTv):                0.000
+    ├ MSE:                      0.000
+    ├ RMSE:                     0.000
+    ├ WSSE (vTPv):              0.000
+    ├ WMSE:                     0.000
+    └ WRMSE:                    0.000
+
+======================================================
+
+
+======================================================
+ Paramters
+======================================================
+ - Parameter Estimates ± σ:
+    ├  rru:     -0.02384 ±  0.00377   [gon]
+    ├  pru:      0.40321 ±  0.00335   [gon]
+    ├  yru:     38.84492 ±  0.00268   [gon]
+    ├    m:        370.9 ±     41.2   [ppm]
+    ├   ty:      6.09552 ±  0.00009   [m]
+    ├   tx:      4.48510 ±  0.00007   [m]
+    ├   tz:     -0.61399 ±  0.00004   [m]
+    ├  mvₓ:        -0.51 ±     0.05   [mm]
+    ├ mv_y:       -64.63 ±     0.10   [mm]
+    └ mv_z:        86.85 ±     0.04   [mm]
+
+======================================================

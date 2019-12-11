@@ -1,0 +1,34 @@
+Vergleich Absolut (Aus SA) zu quasi Absolut (Aus TScanClient)
+TScanClient Cnt=1  X=  217.457 Y= 2338.470 Z= -463.224 RotX=    1.530 RotY=    0.013 RotZ=   -2.592
+SA 2334.8665 -217.6326 -455.3604
+
+TScanClient mehrere Vergleiche aufs selbe Ziel (Fotoapparat Projektion mit Linie durchs Objektiv aus verschiedenen Visuren)
+(Relativvergleich)
+Von Oben
+Cnt=1  X=  219.420 Y= 2333.413 Z= -472.411 RotX=    1.513 RotY=   -0.055 RotZ=   -2.555
+Tscan nach hinten gekippt
+Cnt=1  X=  219.636 Y= 2332.528 Z= -472.620 RotX=    1.932 RotY=    0.039 RotZ=   -2.536
+TScan nach vorne gekippt
+Cnt=1  X=  219.204 Y= 2333.201 Z= -472.400 RotX=    1.141 RotY=    0.081 RotZ=   -2.934
+Tscan nach links gekippt
+Cnt=1  X=  218.689 Y= 2333.325 Z= -472.606 RotX=    1.477 RotY=   -0.509 RotZ=   -3.017
+Tscan nach rechts gekippt
+Cnt=1  X=  219.092 Y= 2332.877 Z= -471.508 RotX=    1.592 RotY=    0.575 RotZ=   -2.947
+Von Oben (Wiederholgenauigkeit=
+Cnt=1  X=  219.352 Y= 2332.671 Z= -472.920 RotX=    1.495 RotY=   -0.041 RotZ=   -3.127
+
+Punkt mit T-Probe gemessen
+(Weiterer Relativvergleich)
+Zettelchen mit T-Scan kamerasymbol Objektiv durch Scanstrich 
+Cnt=1  X=  189.119 Y= 2317.208 Z= -473.095 RotX=    1.467 RotY=    0.021 RotZ=   -2.796
+Bohrung mit T-Scan kamerasymbol Objektiv durch Scanstrich 
+Cnt=1  X=  137.606 Y= 2282.588 Z= -485.572 RotX=    1.487 RotY=   -0.012 RotZ=   -2.894
+
+Zettelchen mit Mit mit TProbe (in Z Achse dann mit Robinkugeldurchmesser++)
+3,  2318.447344,  -188.026222,  -468.517526
+4,  2318.002950,  -188.225706,  -467.721719
+Bohrung mit T-Probe
+5,  2282.522802,  -134.891353,  -483.423697
+6,  2282.495719,  -134.940438,  -483.449394
+
+Was damit gemeint ist (verkippung) habe ich in Fotos vom 28.11.19 um 15:30 festgehalten

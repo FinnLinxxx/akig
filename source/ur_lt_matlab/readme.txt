@@ -1,10 +1,20 @@
-27.11.2019 Finn Linzer - TU Wien
+05.12.2019 Finn Linzer - TU Wien
 Im gleichen Ordner dieser "readme.txt" liegt das auszuführende .m-file "apply_trafo_leverarm.py", dieses muss in Matlab mit "run" gestartet werden.
 
-Im Unterordner "data_add-leverarm-to-RF" liegt ein weiteres .m-file "data_trafo_TTH2.m", dieses muss zusätzlich in Matlab geladen werden, in diesem .m-file werden die Messdaten der Messepoche eingelesen. 
+Im Unterordner "data_add-leverarm-to-RF" liegt ein weiteres .m-file "data_trafo_input.m", dieses muss zusätzlich in Matlab geladen werden, in diesem .m-file werden die Messdaten der Messepoche eingelesen. 
 2 Dateien müssen für die erfolgreiche Berechnung im richtigen Format eingelesen werden:
-lt.csv (oder LTbezugUR_ausSA.txt über SA) - enthält die gemessenen Koordinaten mit CCR in mm ! (wird erst später im Skript in meter ungerechnet)
-juri.csv (oder 191117_pose.txt durch MP_Server.py) - enthält die durch MP_Server.py aufgezeichneten POSEN (1 Punktnummer, 3 Koordinaten, 3 Winkelbeschreibungen, in m und rad).
+---> lt.txt         (oder LTbezugUR_ausSA.txt über SA) - enthält die gemessenen Koordinaten mit CCR in mm ! (wird erst später im Skript in meter ungerechnet)
+Auszug:
+1   2286.542190   -23.796892   52.287136
+2   2153.737950   159.335274   81.135763
+3   1954.453189   433.481556   -3.177771
+
+---> juri.txt       (oder 191117_pose.txt durch MP_Server.py) - enthält die durch MP_Server.py aufgezeichneten POSEN (1 Punktnummer, 3 Koordinaten, 3 Winkelbeschreibungen, in m und rad).
+Auszug:
+1,-0.16378,-0.19230,0.56130,-0.08952,-0.98449,0.74977
+2,-0.17611,0.00131,0.63473,-0.52375,-0.81440,0.97918
+3,-0.19718,0.33355,0.62013,-1.14305,-0.49390,1.24778
+
 (oder ähnlicher Name oder anderes Format (txt,...), kann aber ja entsprechend in matlab eingeladen werden)
 Das vorliegende Skript ist bereits für die in AKIG benutzten Ausgabeformate (MP_Server.py und SA) optimiert und funktioniert für die am 27.11.19 aufgenommen Daten.
 

@@ -18,10 +18,11 @@
 % Sabine Horvath, TU Wien, 22.05.2019
 
 clear all
+close all
+clc
 
 addpath('GeodeticToolbox')
 path_out = 'Results';
-
 
 %% Processing options
 
@@ -35,7 +36,7 @@ var.cov = 1; % 1 ... including; 0 ... identity matrix
 
 % Example var.leverarmRF = 1;
 addpath('data_add-leverarm-to-RF')
-data_trafo_TTH2   
+data_trafo_input 
 name = 'trafo_TTH';
 
 % % Example var.leverarmRF = 0;
@@ -61,6 +62,7 @@ while crit == 0
     adj = fill_trafo_leverarm(adj,var);
 
     
+   
     % Compute x and v
     adj = gauss_helmert(adj);
         

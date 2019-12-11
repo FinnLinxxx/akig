@@ -77,6 +77,6 @@ def dh_rot(theta, a, d, alpha):
                [0, 0, 0, 1]])
     return r
 
-result = forward_kinematic(np.array([[0.58599,-1.91311,-1.35161,-1.88871,1.27346,1.98203]]))
+result = forward_kinematic(np.array([[0.12279,-1.88924,-1.42195,-1.93563,1.23924,2.16544]]))
 #result = forward_kinematic(np.array([[0.062412720173597336, -0.9297316710101526, 0.5339670181274414, -1.198200527821676, 1.6025909185409546, -1.4876373449908655]]))
 print(result)

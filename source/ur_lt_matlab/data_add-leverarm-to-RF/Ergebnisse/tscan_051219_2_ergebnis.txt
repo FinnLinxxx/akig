@@ -1,0 +1,60 @@
+ 
+ Gemessen wurde die Transformation zwischen LT 
+ und Laserscanner (T-Scan) Nullpunkt des Scannerpunktebezugssystem, aber nur die Leverarm Position,
+ die Pose wurde nicht ganz ausgewertet (also Orientierung), wobei dies sicher möglich ist mit den
+ Input Werten, die die Info über Verdrehung auch enthalten.
+ 
+ 
+ Sabine Fragen
+ 
+ Finn, 06.12.19
+ 
+ 
+ 
+     BEI 0.18 mm Genauigkeit 
+     und 24 Punkten
+it =
+
+     9
+
+
+GT_True =
+
+     1
+
+
+GT_Apost =
+
+    1.0557
+    
+
+    
+>> adj.x
+
+ans =
+
+      -0.00362469594047849
+       0.00528815102626566
+         0.610818407878003
+          6.09497105277721
+          4.48524445963048
+        -0.613596227291025
+        0.0162013571908605
+      -0.00398905348067526
+         0.369224811351057
+    
+>> adj.stdX
+
+ans =
+
+      0.000145165094569535
+      0.000112003968246629
+      0.000133139139666726
+      0.000141903559354758
+      9.89809114288053e-05
+      6.58941536345291e-05
+      9.25735846029547e-05
+      0.000104547505046458
+      0.000105873392541676
+      
+      in Meter alles
