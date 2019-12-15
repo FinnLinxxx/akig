@@ -11,8 +11,8 @@ from std_msgs.msg import Header
 
 def tscan_talker(x_tscan,y_tscan,z_tscan,time_delta,parent_frame,start_meas_tscan_rostime,iii):
     pub = rospy.Publisher("tscan_global_cloud2", PointCloud2, queue_size=1)
-        rospy.init_node("tscan_global_xyz")
-        rate = rospy.Rate(1000/time_delta)
+    rospy.init_node("tscan_global_xyz")
+    rate = rospy.Rate(1000/time_delta)
     start_meas_tscan_rostime = rospy.get_time() + 3 #remove this line if correct start_meas_tscan_rostime is provided by user
 
  #pcl def
@@ -49,18 +49,18 @@ def tscan_talker(x_tscan,y_tscan,z_tscan,time_delta,parent_frame,start_meas_tsca
 if __name__ == '__main__':
     try:
         iii = 0
-        filename_scan = "../../../Daten/RoboScanMaterial/VersuchFinn261119/RiffelUndPapier/EineLTScanline1.txt"
+        filename_scan = "../../../Daten/RoboScanMaterial/AKIG_ref/lt_line1.txt"
         f=open(filename_scan,"r")
         lines=f.readlines()
         result_x=[]
         result_y=[]
         result_z=[]
         for x in lines:
-            result_x.append(x.split(' ')[0])
+            result_x.append(x.split()[0])
         for y in lines:
-            result_y.append(y.split(' ')[1])
+            result_y.append(y.split()[1])
         for z in lines:
-            result_z.append(z.split(' ')[2].strip()) #.strip() because of \n seperation
+            result_z.append(z.split()[2])
         f.close()
         time_delta = 1000 #in milliseconds
         parent_frame = "map"

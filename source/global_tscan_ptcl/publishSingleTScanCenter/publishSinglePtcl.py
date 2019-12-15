@@ -10,8 +10,8 @@ from std_msgs.msg import Header
 
 
 def tscan_talker(t,x_tscan,y_tscan,time_delta,parent_frame,start_meas_tscan_rostime,iii):
-    pub = rospy.Publisher("tscan_cloud2", PointCloud2, queue_size=1)
-    rospy.init_node("create_cloud_xyz")
+    pub = rospy.Publisher("tscan_center_cloud2", PointCloud2, queue_size=1)
+    rospy.init_node("tscan_center_xyz")
     rate = rospy.Rate(1000/time_delta)
     start_meas_tscan_rostime = rospy.get_time() + 3 #remove this line if correct start_meas_tscan_rostime is provided by user
 
@@ -49,21 +49,24 @@ def tscan_talker(t,x_tscan,y_tscan,time_delta,parent_frame,start_meas_tscan_rost
 if __name__ == '__main__':
     try:
         iii = 0
-        filename_scan = "../../../Daten/RoboScanMaterial/VersuchFinn261119/RiffelUndPapier/einSCAN_TSCAN.asc"
+        filename_scan = "../../../Daten/RoboScanMaterial/AKIG_ref/lt_line1.txt"
         f=open(filename_scan,"r")
         lines=f.readlines()
         result_t=[]
         result_x=[]
         result_y=[]
         for t in lines:
-            result_t.append(t.split('\t')[0])
+            #result_t.append(t.split('\t')[0])
+            result_t.append(t.split()[0])
         for x in lines:
-            result_x.append(x.split('\t')[1])
+            #result_x.append(x.split('\t')[1])
+            result_x.append(x.split()[1])
         for y in lines:
-            result_y.append(y.split('\t')[2].strip()) #.strip() because of \n seperation
+            #result_y.append(y.split('\t')[2].strip()) #.strip() because of \n seperation
+            result_y.append(y.split()[2]) #.strip() because of \n seperation
         f.close()
         time_delta = 1000 #in milliseconds
-        parent_frame = "tscan_calc"
+        parent_frame = "map"
         start_meas_tscan_rostime = 1111# not used right now as this is provided by the time calibration later on 
         
         #print result_y
