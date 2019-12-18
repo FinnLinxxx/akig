@@ -49,7 +49,7 @@ def tscan_talker(x_tscan,y_tscan,z_tscan,time_delta,parent_frame,start_meas_tsca
 if __name__ == '__main__':
     try:
         iii = 0
-        filename_scan = "../../../Daten/RoboScanMaterial/AKIG_ref/lt_line1.txt"
+        filename_scan = "../../../Daten/RoboScanMaterial/AKIG_ref/lt_line2.txt"
         f=open(filename_scan,"r")
         lines=f.readlines()
         result_x=[]

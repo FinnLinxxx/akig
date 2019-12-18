@@ -24,7 +24,7 @@ def tscan_talker(x_tscan,y_tscan,z_tscan,time_delta,parent_frame,start_meas_tsca
             if not (x_tscan[i] == "INVALID" or y_tscan[i] == "INVALID"):
                 x = float(x_tscan[i]) /1000
                 y = float(y_tscan[i])/1000
-                z = float(z_tscan[i]) /1000
+                z = float(z_tscan[i]) /1000 
                 pt = [x, y, z]
                 points.append(pt)
 
@@ -49,7 +49,7 @@ def tscan_talker(x_tscan,y_tscan,z_tscan,time_delta,parent_frame,start_meas_tsca
 if __name__ == '__main__':
     try:
         iii = 0
-        filename_scan = "../../../Daten/RoboScanMaterial/AKIG_ref/flansch_line1.txt"
+        filename_scan = "../../../Daten/RoboScanMaterial/AKIG_ref/flansch_line2.txt"
         f=open(filename_scan,"r")
         lines=f.readlines()
         result_x=[]
