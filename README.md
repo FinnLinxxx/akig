@@ -30,6 +30,11 @@ $ rosbag play rasp_speed_03_17_01.bag --clock
 ```
 
 Nun folgt die Transformation mit den hier gezeigten Übergabeparametern:
+Eventuell muss der Workspace noch hinzugefügt werden (in jedem Terminal, oder in die .bashrc)
+```bash
+$ source /home/flinzer/ros_ws/devel/setup.bash
+```
+
 ```bash
 $ rosrun tf_points_global transform_point2pointcloud _ptcl2_global_frame:=map _ptcl2_local_frame:=leverarm _ptcl2_input_topic:=/tscan_cloud2 _ptcl2_output_topic:=/tscan_cloud2_global _drop_when_same_position:=false
 ```
