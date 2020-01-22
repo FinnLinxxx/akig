@@ -24,13 +24,13 @@ def tscan_talker(t,x_tscan,y_tscan,time_delta,parent_frame,start_meas_tscan_rost
             points = []
             lim = 8
              
-            iii = iii + 13135//(1000//time_delta) # 13321 measdata/second
+            iii = iii + 13321//(1000//time_delta) # 13321 measdata/second
 
-            for i in range(1+iii, 13135//(1000//time_delta) + iii):  # Approx only!!! Measurement per seconds=~13135 in respekt to hz for now
+            for i in range(1+iii, 13321//(1000//time_delta) + iii):  # Approx only!!! Measurement per seconds=~13135 in respekt to hz for now
                 if not (x_tscan[i] == "INVALID" or y_tscan[i] == "INVALID"):
                     x = float(x_tscan[i]) /1000
-                    y = 0
-                    z = float(y_tscan[i]) /1000
+                    y = float(y_tscan[i]) /1000
+                    z = 0 
                     pt = [x, y, z]
                     points.append(pt)
 
@@ -55,7 +55,7 @@ def tscan_talker(t,x_tscan,y_tscan,time_delta,parent_frame,start_meas_tscan_rost
 if __name__ == '__main__':
     try:
 
-        time_delta = 100 #in milliseconds
+        time_delta = 10 #in milliseconds
         parent_frame = "leverarm" #tf frame of defined leverarm (T-Scan zero)
         start_meas_tscan_rostime = 1579272653.208600    
 
