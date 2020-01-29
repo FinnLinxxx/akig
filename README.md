@@ -347,17 +347,13 @@ T-Scan Collect 9.02 starten, Messwerte Environmental Parameters bestätigen. Bei
 
 SA starten
 
-SA muss auf Millimeter eingestellt sein. Das Gerät muss hinzugefügt sein, etc. (siehe Anleitung Gruppe)
+SA muss auf Millimeter eingestellt sein. Das Gerät (LTD800) muss hinzugefügt sein (Instrument >> Add Instrument)
 
-Instrument >> Run Interface Module >>Leica T-Scan >> OK ... Warten, Beam muss auf ein Prisma der T-Scan eingelockt sein: 6D 
+Instrument >> Run Interface Module >> Leica T-Scan >> OK ... Warten, Beam muss auf ein Prisma der T-Scan eingelockt sein: 6D Status OK!
 
-Status OK!
+Start Scan >> Die T-Scan kann nun das Messobjekt überstreichen >> Stop Scan 
 
-Start Scan >> Am Instrument leicht wackeln >> Stop Scan (Nur wenn man am Instrument wackelt nimmt er auf, wie fatal...)
-
-Gute Namen vergeben, SA speichern und schließen.
-
-SA schließen
+Gute Namen vergeben, SA speichern und (eventuell die PW mit rechtsklick >> export ascii speichern) und schließen.
 
 T-Scan Collect 9.02 schließen
 
