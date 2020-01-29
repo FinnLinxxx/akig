@@ -335,6 +335,35 @@ Es können mehrere Rosbags aufgenommen werden, diese erhalten als Namen jeweils 
 $ mv 2019-11-19-19-56-09.bag mybag.bag
 ```
 
+# Aufnahme einer Referenzpunktwolke in SA
+
+Kurzanleitung
+
+ScannerController PC-Programm starten ("Das Grüne Program" -> Desktop) (bei Fehlermeldung neustart PC)
+
+SCANNERCONTROLLER auf ON, Text rattert beim Terminalprogramm bis grüne Oberfläche warten
+
+T-Scan Collect 9.02 starten, Messwerte Environmental Parameters bestätigen. Bei Fehler nur dieses Programm schließen und wieder starten (bei Punkte unten in der Leiste rechts auf grün)
+
+SA starten
+
+SA muss auf Millimeter eingestellt sein. Das Gerät muss hinzugefügt sein, etc. (siehe Anleitung Gruppe)
+
+Instrument >> Run Interface Module >>Leica T-Scan >> OK ... Warten, Beam muss auf ein Prisma der T-Scan eingelockt sein: 6D 
+
+Status OK!
+
+Start Scan >> Am Instrument leicht wackeln >> Stop Scan (Nur wenn man am Instrument wackelt nimmt er auf, wie fatal...)
+
+Gute Namen vergeben, SA speichern und schließen.
+
+SA schließen
+
+T-Scan Collect 9.02 schließen
+
+Das Terminalprogramm (Scanner Controller) schließen
+
+SCANNERCONTROLLER auf off
 
 # Reproduzieren der Daten als Rosbag
 Befehle für Übung am 22.01.2020
