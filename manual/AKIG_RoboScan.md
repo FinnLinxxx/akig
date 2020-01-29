@@ -347,40 +347,57 @@ $ rosbag play thisisa.bag --clock --loop
 
 
 ## Reproduzieren der Daten als Rosbag
+Befehle für Übung am 22.01.2020
 
-Wiederherstellen roboterfahrt (rviz) und Zeitbezug!
-Problemstellung Benennen
-Lösungsansatz vorstellen
+### git repo aktualisieren
 ```bash
-$ vim createPtcl.py
+$ cd akig
+$ git pull
 ```
 
-T-Scan Punktwolke in Ros laden, intention
-
+### startup roscore
 ```bash
-$ python createPtcl.py
+$ roscore -p [PORTNR]
 ```
 
-Punktwolke an leverarm hängen (siehe py-skript)
-
-Erzeugen einer Referenzierten Punktwolke
+Die createGlobalPtclFromASC.py nimmt eine bestehende ASC Datei und streamt diese als Punktwolke ins ROS
+Um zu funktionieren muss der Dateiname.asc, time_delta, parent_frame und die start_meas_tscan_rostime angegeben werden, die dem ermittelten ROS-Zeitstempel aus der Zeitsynchro entspricht. Gegebenfalls müssen auch die Achsen angepasst werden. 
+Zusätzlich muss ein neuer Algorithmus gefunden werden, der die Punkte aus der ASC in der Zeitauflösung exakter ans ROS übergibt. Dafür muss auch auf die Performance geachtet werden. Wenn jeder Punkt einen einzelnen Zeitstempel besitzen sollte, wird es eventuell zu anspruchsvoll diese auch als Einzelpunkte zu transformieren, vor allem vor dem Hintergrund, dass für den Roboterarm die Pose mit nur 125hz gemessen werden kann.
 
 ```bash
-$ rosrun tf_points_global transform_point2pointcloud _ptcl2_global_frame:=map _ptcl2_local_frame:=lever _ptcl2_input_topic:=/tscan_cloud2 _ptcl2_output_topic:=/tscan_cloud2_global _drop_when_same_position:=false
+$ cd akig/source/global_tscan_ptcl/publishASCfromTScanCenter
+$ python3 createGlobalPtclFromASC.py
 ```
 
-Rausschreiben einer Referenzierten Punktwolke 
+Bevor wir mit dem Rosbag arbeiten können setzen wir den Roscore auf simulation, damit wir einen eigenen Zeitbezug aufstellen können. Dieser Befehl muss nach dem Start eines roscores ausgeführt werden.
+
+```bash
+$ rosparam set use_sim_time 1
+$ rosbag play rasp_speed_03_17_01.bag --clock
+```
+
+Nun folgt die Transformation mit den hier gezeigten Übergabeparametern:
+Eventuell muss der Workspace noch hinzugefügt werden (in jedem Terminal, oder in die .bashrc)
+```bash
+$ source /home/flinzer/ros_ws/devel/setup.bash
+```
+
+```bash
+$ rosrun tf_points_global transform_point2pointcloud _ptcl2_global_frame:=map _ptcl2_local_frame:=leverarm _ptcl2_input_topic:=/tscan_cloud2 _ptcl2_output_topic:=/tscan_cloud2_global _drop_when_same_position:=false
+```
+
+Eine einzelne Pointcloud2 Punktwolke kann in ROS mit folgendem Befehl gespeichert werden, diesen am besten in einem eigenen Unterordner ausführen
 ```bash
 $ rosrun pcl_ros pointcloud_to_pcd input:=/tscan_cloud2_global
 ```
 
-Zusammenfassen der pcds zu einer Ascii-Datei
+Alle entstandenen PCD-Files (lesbares Format für Punktwolken) können mit folgendem Linux Befehl zur ptcl_as_ascii.txt zusammengefasst werden, diese Datei kann so zb in Cloudcompare angeschaut werden.
 
 ```bash
 $ printf '%s\n\n' "$(tail -n +30 *.pcd)" > ptcl_as_ascii.txt
 ```
 
-Öffnen der Punktwolke mit CloudCompare zB.:
+Öffnen der Punktwolke mit CloudCompare zB. oder unter windows:
 
 ```bash
 $ cloudcompare.CloudCompare ptcl_as_ascii.txt
